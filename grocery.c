@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main() {
     char G_item_KP[3][50]; // ชื่อสินค้า 3 ชิ้น
@@ -21,13 +22,19 @@ int main() {
         for (int i = 0; i < 3; i++) {
             printf("\nEnter item %d: ", i + 1);
             fflush(stdin);
-            gets(G_item_KP[i]);
+            fgets(G_item_KP[i], sizeof(G_item_KP[i]), stdin);
+            
+            // ลบ newline character ที่ fgets เพิ่มเข้ามา
+            G_item_KP[i][strcspn(G_item_KP[i], "\n")] = 0;
 
             printf("Enter item price: ");
             scanf("%f", &G_price_KP[i]);
 
             printf("Enter item quantity: ");
             scanf("%d", &G_qty_KP[i]);
+
+            // Clear input buffer
+            while (getchar() != '\n');
 
             // คำนวณ Sub-total
             G_subtotal_KP[i] = G_price_KP[i] * G_qty_KP[i];
@@ -41,20 +48,29 @@ int main() {
 
         // แสดงผลลัพธ์
         printf("\n\n-------------------------------\n");
-        printf("        Grocery List:         \n");
-        printf("-------------------------------\n");
+        printf("\nGrocery List:\n");
+        printf("\n-------------------------------\n");
 
         for (int i = 0; i < 3; i++) {
             printf("\nItem %d: %s\n", i + 1, G_item_KP[i]);
             printf("Item %d Price: %.2f Baht\n", i + 1, G_price_KP[i]);
             printf("Item %d Quantity: %d\n", i + 1, G_qty_KP[i]);
-            printf("Item %d Sub-total Price: %.2f Baht\n", i + 1, G_subtotal_KP[i]);
+            
+            // Format sub-total price to show as whole number when appropriate
+            if (G_subtotal_KP[i] == (int)G_subtotal_KP[i]) {
+                printf("Item %d Sub-total Price: %d Baht\n", i + 1, (int)G_subtotal_KP[i]);
+            } else {
+                printf("Item %d Sub-total Price: %.2f Baht\n", i + 1, G_subtotal_KP[i]);
+            }
         }
 
-        printf("\nTotal Payment = %.2f Baht\n", G_total_KP);
+        printf("\n\nTotal Payment = %.2f Baht\n", G_total_KP);
 
         printf("\n\nPress 1 to calculate again or 0 to exit: ");
         scanf("%d", &x_KP);
+        
+        // Clear input buffer after scanf
+        while (getchar() != '\n');
     }
 
     printf("\nThank you for using our program!\n");
